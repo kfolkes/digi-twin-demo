@@ -1,0 +1,120 @@
+{
+  "twins": [
+    {
+      "id": "bottling_line_1",
+      "modelId": "dtmi:manufacturing:ProductionLine;1",
+      "properties": {
+        "LineName": "Bottling Line 1",
+        "Status": "Running"
+      }
+    },
+    {
+      "id": "filler",
+      "modelId": "dtmi:manufacturing:Station;1",
+      "properties": {
+        "StationName": "Filler",
+        "StationType": "Filling",
+        "Status": "Running"
+      }
+    },
+    {
+      "id": "capper",
+      "modelId": "dtmi:manufacturing:Station;1",
+      "properties": {
+        "StationName": "Capper",
+        "StationType": "Capping",
+        "Status": "Running"
+      }
+    },
+    {
+      "id": "labeler",
+      "modelId": "dtmi:manufacturing:Station;1",
+      "properties": {
+        "StationName": "Labeler",
+        "StationType": "Labeling",
+        "Status": "Running"
+      }
+    },
+    {
+      "id": "filler_motor",
+      "modelId": "dtmi:manufacturing:Motor;1",
+      "properties": {
+        "MotorName": "Filler Motor",
+        "RatedPower": 5.5
+      }
+    },
+    {
+      "id": "capper_motor",
+      "modelId": "dtmi:manufacturing:Motor;1",
+      "properties": {
+        "MotorName": "Capper Motor",
+        "RatedPower": 3
+      }
+    },
+    {
+      "id": "labeler_motor",
+      "modelId": "dtmi:manufacturing:Motor;1",
+      "properties": {
+        "MotorName": "Labeler Motor",
+        "RatedPower": 2.2
+      }
+    },
+    {
+      "id": "filler_temp",
+      "modelId": "dtmi:manufacturing:TemperatureSensor;1",
+      "properties": {
+        "Unit": "Celsius"
+      }
+    },
+    {
+      "id": "filler_vib",
+      "modelId": "dtmi:manufacturing:VibrationSensor;1",
+      "properties": {
+        "Unit": "mm/s",
+        "ThresholdHigh": 10
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "sourceId": "bottling_line_1",
+      "targetId": "filler",
+      "relationshipName": "hasStation"
+    },
+    {
+      "sourceId": "bottling_line_1",
+      "targetId": "capper",
+      "relationshipName": "hasStation"
+    },
+    {
+      "sourceId": "bottling_line_1",
+      "targetId": "labeler",
+      "relationshipName": "hasStation"
+    },
+    {
+      "sourceId": "filler",
+      "targetId": "filler_motor",
+      "relationshipName": "hasEquipment"
+    },
+    {
+      "sourceId": "capper",
+      "targetId": "capper_motor",
+      "relationshipName": "hasEquipment"
+    },
+    {
+      "sourceId": "labeler",
+      "targetId": "labeler_motor",
+      "relationshipName": "hasEquipment"
+    },
+    {
+      "sourceId": "filler_motor",
+      "targetId": "filler_temp",
+      "relationshipName": "hasSensor"
+    },
+    {
+      "sourceId": "filler_motor",
+      "targetId": "filler_vib",
+      "relationshipName": "hasSensor"
+    }
+  ]
+}
