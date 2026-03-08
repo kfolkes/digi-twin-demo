@@ -1,0 +1,23 @@
+{
+  "@id": "dtmi:manufacturing:VibrationSensor;1",
+  "@type": "Interface",
+  "displayName": "Vibration Sensor",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "Unit",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "ThresholdHigh",
+      "schema": "double"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "Vibration",
+      "schema": "double"
+    }
+  ],
+  "@context": "dtmi:dtdl:context;2"
+}
