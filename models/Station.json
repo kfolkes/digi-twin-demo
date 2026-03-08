@@ -1,0 +1,36 @@
+{
+  "@id": "dtmi:manufacturing:Station;1",
+  "@type": "Interface",
+  "displayName": "Station",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "StationName",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "StationType",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "Status",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "CycleTime",
+      "schema": "double"
+    },
+    {
+      "@type": "Relationship",
+      "name": "hasEquipment"
+    },
+    {
+      "@type": "Relationship",
+      "name": "hasSensor"
+    }
+  ],
+  "@context": "dtmi:dtdl:context;2"
+}
