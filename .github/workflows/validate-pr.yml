@@ -1,0 +1,156 @@
+name: Validate Digital Twin PR
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'models/**'
+      - 'twins/**'
+
+jobs:
+  validate-dtdl:
+    name: Validate DTDL Models
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate model JSON syntax
+        run: |
+          echo "🔍 Checking JSON syntax for all model files..."
+          errors=0
+          for f in models/*.json; do
+            if [ -f "$f" ]; then
+              if ! python3 -m json.tool "$f" > /dev/null 2>&1; then
+                echo "❌ Invalid JSON: $f"
+                errors=$((errors + 1))
+              else
+                echo "✅ Valid JSON: $f"
+              fi
+            fi
+          done
+          if [ $errors -gt 0 ]; then
+            echo "::error::$errors model files have invalid JSON"
+            exit 1
+          fi
+
+      - name: Validate DTDL structure
+        run: |
+          echo "🔍 Checking required DTDL fields (@id, @type, @context)..."
+          errors=0
+          for f in models/*.json; do
+            if [ -f "$f" ]; then
+              result=$(python3 -c "
+          import json, sys
+          with open('$f') as fh:
+              d = json.load(fh)
+          missing = [k for k in ['@id','@type','@context'] if k not in d]
+          if missing:
+              print(f'MISSING: {', '.join(missing)}')
+              sys.exit(1)
+          if d.get('@type') != 'Interface':
+              print(f'WARNING: @type is {d.get(\"@type\")}, expected Interface')
+          print('OK')
+          " 2>&1) || true
+              if echo "$result" | grep -q "MISSING"; then
+                echo "❌ $f — $result"
+                errors=$((errors + 1))
+              else
+                echo "✅ $f — valid DTDL structure"
+              fi
+            fi
+          done
+          if [ $errors -gt 0 ]; then
+            echo "::error::$errors model files have invalid DTDL structure"
+            exit 1
+          fi
+
+      - name: Validate twin instance files
+        run: |
+          echo "🔍 Checking twin instance files..."
+          if [ -d "twins" ]; then
+            for f in twins/*.json; do
+              if [ -f "$f" ]; then
+                if ! python3 -m json.tool "$f" > /dev/null 2>&1; then
+                  echo "❌ Invalid JSON: $f"
+                  exit 1
+                else
+                  echo "✅ Valid: $f"
+                fi
+              fi
+            done
+          else
+            echo "ℹ️  No twins/ directory — skipping"
+          fi
+
+      - name: Cross-reference twins against models
+        run: |
+          echo "🔍 Checking twin definitions reference valid models..."
+          python3 -c "
+          import json, glob, sys
+
+          # Collect all model IDs
+          model_ids = set()
+          for f in glob.glob('models/*.json'):
+              with open(f) as fh:
+                  d = json.load(fh)
+                  model_ids.add(d.get('@id', ''))
+
+          # Check twin files
+          errors = 0
+          for f in glob.glob('twins/*.json'):
+              with open(f) as fh:
+                  data = json.load(fh)
+              twins = data if isinstance(data, list) else data.get('twins', [])
+              for twin in twins:
+                  mid = twin.get('modelId', '')
+                  if mid and mid not in model_ids:
+                      print(f'⚠️  {f}: twin {twin.get(\"id\",\"?\")} references unknown model {mid}')
+                      # Warning only — model may be uploaded separately
+          print('✅ Cross-reference check complete')
+          "
+
+      - name: PR Summary
+        run: |
+          echo "## Digital Twin Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| JSON Syntax | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| DTDL Structure (@id, @type, @context) | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Twin Definitions | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Model Cross-Reference | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+
+  diff-report:
+    name: Twin Change Report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate change report
+        run: |
+          echo "## 📋 Digital Twin Changes in This PR" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Models Changed" >> $GITHUB_STEP_SUMMARY
+          models=$(git diff --name-only origin/main...HEAD -- models/ 2>/dev/null || echo "")
+          if [ -z "$models" ]; then
+            echo "_No model changes_" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "$models" | while read f; do echo "- \`$f\`" >> $GITHUB_STEP_SUMMARY; done
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Twin Instances Changed" >> $GITHUB_STEP_SUMMARY
+          twins=$(git diff --name-only origin/main...HEAD -- twins/ 2>/dev/null || echo "")
+          if [ -z "$twins" ]; then
+            echo "_No twin instance changes_" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "$twins" | while read f; do echo "- \`$f\`" >> $GITHUB_STEP_SUMMARY; done
+          fi

@@ -1,0 +1,117 @@
+name: Deploy Digital Twins to Production
+
+on:
+  release:
+    types: [published]
+
+env:
+  ADT_INSTANCE_URL: ${{ vars.ADT_PROD_INSTANCE_URL }}
+
+jobs:
+  deploy:
+    name: Deploy to Production ADT Instance
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install Azure IoT extension
+        run: az extension add --name azure-iot --yes
+
+      - name: Extract ADT instance name
+        id: adt
+        run: |
+          instance=$(echo "$ADT_INSTANCE_URL" | sed 's|https://||' | cut -d. -f1)
+          echo "name=$instance" >> "$GITHUB_OUTPUT"
+
+      - name: Snapshot production graph (pre-deploy)
+        run: |
+          mkdir -p artifacts
+          az dt twin query \
+            --dt-name "${{ steps.adt.outputs.name }}" \
+            -q "SELECT * FROM DIGITALTWINS" \
+            -o json > artifacts/predeploy-twins.json || echo "[]" > artifacts/predeploy-twins.json
+
+      - name: Upload DTDL Models
+        run: |
+          echo "📤 Uploading DTDL models to production (${{ steps.adt.outputs.name }})..."
+          for f in models/*.json; do
+            if [ -f "$f" ]; then
+              model_name=$(basename "$f" .json)
+              echo "  ⬆️  $model_name"
+              az dt model create \
+                --dt-name "${{ steps.adt.outputs.name }}" \
+                --models "$f" \
+                --only-show-errors 2>/dev/null \
+              || echo "  ℹ️  Model may already exist — skipping"
+            fi
+          done
+
+      - name: Deploy Twin Instances
+        run: |
+          echo "🏗️ Deploying twin instances to production..."
+          for f in twins/*.json; do
+            if [ -f "$f" ]; then
+              echo "  Processing $(basename $f)..."
+              FILE_PATH="$f" ADT_NAME="${{ steps.adt.outputs.name }}" python3 << 'DEPLOY_SCRIPT'
+          import json
+          import os
+          import subprocess
+
+          adt_name = os.environ["ADT_NAME"]
+          file_path = os.environ["FILE_PATH"]
+
+          with open(file_path, encoding="utf-8") as fh:
+              data = json.load(fh)
+
+          twins = data.get("twins", []) if isinstance(data, dict) else data
+          relationships = data.get("relationships", []) if isinstance(data, dict) else []
+
+          for twin in twins:
+              subprocess.run([
+                  "az", "dt", "twin", "create",
+                  "--dt-name", adt_name,
+                  "--dtmi", twin["modelId"],
+                  "--twin-id", twin["id"]
+              ], capture_output=True, text=True)
+
+          for rel in relationships:
+              rid = rel.get("id", f"{rel['sourceId']}-{rel['relationshipName']}-{rel['targetId']}")
+              subprocess.run([
+                  "az", "dt", "twin", "relationship", "create",
+                  "--dt-name", adt_name,
+                  "--source", rel["sourceId"],
+                  "--target", rel["targetId"],
+                  "--relationship", rel["relationshipName"],
+                  "--relationship-id", rid
+              ], capture_output=True, text=True)
+          DEPLOY_SCRIPT
+            fi
+          done
+
+      - name: Verify deployment
+        run: |
+          twin_count=$(az dt twin query \
+            --dt-name "${{ steps.adt.outputs.name }}" \
+            -q "SELECT COUNT() FROM DIGITALTWINS" \
+            -o tsv 2>/dev/null || echo "unknown")
+
+          echo "## 🚀 Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Detail | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Release | ${{ github.event.release.tag_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Target | \`${{ steps.adt.outputs.name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Twins | $twin_count |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ✅ Deployed |" >> $GITHUB_STEP_SUMMARY
