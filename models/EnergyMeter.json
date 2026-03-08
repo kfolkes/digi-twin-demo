@@ -1,0 +1,23 @@
+{
+  "@id": "dtmi:manufacturing:EnergyMeter;1",
+  "@type": "Interface",
+  "displayName": "Energy Meter",
+  "contents": [
+    {
+      "@type": "Telemetry",
+      "name": "PowerConsumption",
+      "schema": "double"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "Voltage",
+      "schema": "double"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "Current",
+      "schema": "double"
+    }
+  ],
+  "@context": "dtmi:dtdl:context;2"
+}
