@@ -1,0 +1,32 @@
+{
+  "@id": "dtmi:manufacturing:RobotArm;1",
+  "@type": "Interface",
+  "displayName": "Robot Arm",
+  "@context": "dtmi:dtdl:context;2",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "ArmName",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "Status",
+      "schema": "string"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "CycleTime",
+      "schema": "double"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "JointTemperature",
+      "schema": "double"
+    },
+    {
+      "@type": "Relationship",
+      "name": "hasSensor"
+    }
+  ]
+}
