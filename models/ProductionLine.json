@@ -1,0 +1,28 @@
+{
+  "@id": "dtmi:manufacturing:ProductionLine;1",
+  "@type": "Interface",
+  "displayName": "Production Line",
+  "@context": "dtmi:dtdl:context;2",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "LineName",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "Status",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "Throughput",
+      "schema": "double"
+    },
+    {
+      "@type": "Relationship",
+      "name": "hasStation",
+      "target": "dtmi:manufacturing:Station;1"
+    }
+  ]
+}

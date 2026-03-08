@@ -1,0 +1,31 @@
+{
+  "@id": "dtmi:manufacturing:Station;1",
+  "@type": "Interface",
+  "displayName": "Station",
+  "@context": "dtmi:dtdl:context;2",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "StationName",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "StationType",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "Status",
+      "schema": "string"
+    },
+    {
+      "@type": "Relationship",
+      "name": "hasEquipment"
+    },
+    {
+      "@type": "Relationship",
+      "name": "hasSensor"
+    }
+  ]
+}
