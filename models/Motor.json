@@ -1,0 +1,37 @@
+{
+  "@id": "dtmi:manufacturing:Motor;1",
+  "@type": "Interface",
+  "displayName": "Motor",
+  "@context": "dtmi:dtdl:context;2",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "MotorName",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "RatedPower",
+      "schema": "double"
+    },
+    {
+      "@type": "Property",
+      "name": "CurrentRPM",
+      "schema": "double"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "Temperature",
+      "schema": "double"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "Vibration",
+      "schema": "double"
+    },
+    {
+      "@type": "Relationship",
+      "name": "hasSensor"
+    }
+  ]
+}
