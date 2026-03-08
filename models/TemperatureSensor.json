@@ -1,0 +1,18 @@
+{
+  "@id": "dtmi:manufacturing:TemperatureSensor;1",
+  "@type": "Interface",
+  "displayName": "Temperature Sensor",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "Unit",
+      "schema": "string"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "Temperature",
+      "schema": "double"
+    }
+  ],
+  "@context": "dtmi:dtdl:context;2"
+}

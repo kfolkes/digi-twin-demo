@@ -1,0 +1,261 @@
+{
+  "twins": [
+    {
+      "id": "bottling_line_1",
+      "modelId": "dtmi:manufacturing:ProductionLine;1",
+      "properties": {
+        "LineName": "Bottling Line 1",
+        "Status": "Running"
+      }
+    },
+    {
+      "id": "filler",
+      "modelId": "dtmi:manufacturing:Station;1",
+      "properties": {
+        "StationName": "Filler",
+        "StationType": "Filling",
+        "Status": "Running"
+      }
+    },
+    {
+      "id": "capper",
+      "modelId": "dtmi:manufacturing:Station;1",
+      "properties": {
+        "StationName": "Capper",
+        "StationType": "Capping",
+        "Status": "Running"
+      }
+    },
+    {
+      "id": "labeler",
+      "modelId": "dtmi:manufacturing:Station;1",
+      "properties": {
+        "StationName": "Labeler",
+        "StationType": "Labeling",
+        "Status": "Running"
+      }
+    },
+    {
+      "id": "filler_motor",
+      "modelId": "dtmi:manufacturing:Motor;1",
+      "properties": {
+        "MotorName": "Filler Motor",
+        "RatedPower": 5.5
+      }
+    },
+    {
+      "id": "capper_motor",
+      "modelId": "dtmi:manufacturing:Motor;1",
+      "properties": {
+        "MotorName": "Capper Motor",
+        "RatedPower": 3
+      }
+    },
+    {
+      "id": "labeler_motor",
+      "modelId": "dtmi:manufacturing:Motor;1",
+      "properties": {
+        "MotorName": "Labeler Motor",
+        "RatedPower": 2.2
+      }
+    },
+    {
+      "id": "filler_temp",
+      "modelId": "dtmi:manufacturing:TemperatureSensor;1",
+      "properties": {
+        "Unit": "Celsius"
+      }
+    },
+    {
+      "id": "filler_vib",
+      "modelId": "dtmi:manufacturing:VibrationSensor;1",
+      "properties": {
+        "Unit": "mm/s",
+        "ThresholdHigh": 10
+      }
+    },
+    {
+      "id": "cnc_production_line",
+      "modelId": "dtmi:manufacturing:ProductionLine;1",
+      "properties": {
+        "LineName": "CNC Production Line",
+        "Status": "Running",
+        "Throughput": 0
+      }
+    },
+    {
+      "id": "cnc_machine_01",
+      "modelId": "dtmi:manufacturing:Station;1",
+      "properties": {
+        "StationName": "CNC Machine 01",
+        "StationType": "CNC Machining"
+      }
+    },
+    {
+      "id": "cnc_machine_02",
+      "modelId": "dtmi:manufacturing:Station;1",
+      "properties": {
+        "StationName": "CNC Machine 02",
+        "StationType": "CNC Machining"
+      }
+    },
+    {
+      "id": "cnc_machine_03",
+      "modelId": "dtmi:manufacturing:Station;1",
+      "properties": {
+        "StationName": "CNC Machine 03",
+        "StationType": "CNC Machining"
+      }
+    },
+    {
+      "id": "cnc_01_spindle_temp",
+      "modelId": "dtmi:manufacturing:TemperatureSensor;1",
+      "properties": {}
+    },
+    {
+      "id": "cnc_02_spindle_temp",
+      "modelId": "dtmi:manufacturing:TemperatureSensor;1",
+      "properties": {}
+    },
+    {
+      "id": "cnc_03_spindle_temp",
+      "modelId": "dtmi:manufacturing:TemperatureSensor;1",
+      "properties": {}
+    },
+    {
+      "id": "cnc_01_vibration",
+      "modelId": "dtmi:manufacturing:VibrationSensor;1",
+      "properties": {}
+    },
+    {
+      "id": "cnc_02_vibration",
+      "modelId": "dtmi:manufacturing:VibrationSensor;1",
+      "properties": {}
+    },
+    {
+      "id": "cnc_03_vibration",
+      "modelId": "dtmi:manufacturing:VibrationSensor;1",
+      "properties": {}
+    },
+    {
+      "id": "line_energy_meter",
+      "modelId": "dtmi:manufacturing:EnergyMeter;1",
+      "properties": {}
+    },
+    {
+      "id": "conveyor_01_to_02",
+      "modelId": "dtmi:manufacturing:Conveyor;1",
+      "properties": {
+        "ConveyorName": "Conveyor CNC1 to CNC2",
+        "Speed": 1.5,
+        "Status": "Active"
+      }
+    },
+    {
+      "id": "conveyor_02_to_03",
+      "modelId": "dtmi:manufacturing:Conveyor;1",
+      "properties": {
+        "ConveyorName": "Conveyor CNC2 to CNC3",
+        "Speed": 1.5,
+        "Status": "Active"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "sourceId": "bottling_line_1",
+      "targetId": "filler",
+      "relationshipName": "hasStation"
+    },
+    {
+      "sourceId": "bottling_line_1",
+      "targetId": "capper",
+      "relationshipName": "hasStation"
+    },
+    {
+      "sourceId": "bottling_line_1",
+      "targetId": "labeler",
+      "relationshipName": "hasStation"
+    },
+    {
+      "sourceId": "filler",
+      "targetId": "filler_motor",
+      "relationshipName": "hasEquipment"
+    },
+    {
+      "sourceId": "capper",
+      "targetId": "capper_motor",
+      "relationshipName": "hasEquipment"
+    },
+    {
+      "sourceId": "labeler",
+      "targetId": "labeler_motor",
+      "relationshipName": "hasEquipment"
+    },
+    {
+      "sourceId": "filler_motor",
+      "targetId": "filler_temp",
+      "relationshipName": "hasSensor"
+    },
+    {
+      "sourceId": "filler_motor",
+      "targetId": "filler_vib",
+      "relationshipName": "hasSensor"
+    },
+    {
+      "sourceId": "cnc_production_line",
+      "targetId": "cnc_machine_01",
+      "relationshipName": "hasStation"
+    },
+    {
+      "sourceId": "cnc_production_line",
+      "targetId": "cnc_machine_02",
+      "relationshipName": "hasStation"
+    },
+    {
+      "sourceId": "cnc_production_line",
+      "targetId": "cnc_machine_03",
+      "relationshipName": "hasStation"
+    },
+    {
+      "sourceId": "cnc_machine_01",
+      "targetId": "cnc_01_spindle_temp",
+      "relationshipName": "hasSensor"
+    },
+    {
+      "sourceId": "cnc_machine_01",
+      "targetId": "cnc_01_vibration",
+      "relationshipName": "hasSensor"
+    },
+    {
+      "sourceId": "cnc_machine_01",
+      "targetId": "conveyor_01_to_02",
+      "relationshipName": "hasEquipment"
+    },
+    {
+      "sourceId": "cnc_machine_02",
+      "targetId": "cnc_02_spindle_temp",
+      "relationshipName": "hasSensor"
+    },
+    {
+      "sourceId": "cnc_machine_02",
+      "targetId": "cnc_02_vibration",
+      "relationshipName": "hasSensor"
+    },
+    {
+      "sourceId": "cnc_machine_02",
+      "targetId": "conveyor_02_to_03",
+      "relationshipName": "hasEquipment"
+    },
+    {
+      "sourceId": "cnc_machine_03",
+      "targetId": "cnc_03_spindle_temp",
+      "relationshipName": "hasSensor"
+    },
+    {
+      "sourceId": "cnc_machine_03",
+      "targetId": "cnc_03_vibration",
+      "relationshipName": "hasSensor"
+    }
+  ]
+}
