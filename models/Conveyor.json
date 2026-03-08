@@ -1,0 +1,28 @@
+{
+  "@id": "dtmi:manufacturing:Conveyor;1",
+  "@type": "Interface",
+  "displayName": "Conveyor",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "ConveyorName",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "Speed",
+      "schema": "double"
+    },
+    {
+      "@type": "Property",
+      "name": "Status",
+      "schema": "string"
+    },
+    {
+      "@type": "Telemetry",
+      "name": "Speed",
+      "schema": "double"
+    }
+  ],
+  "@context": "dtmi:dtdl:context;2"
+}
